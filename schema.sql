@@ -40,17 +40,36 @@ CREATE TABLE IF NOT EXISTS documentos_dam (
     FOREIGN KEY (contribuinte_id) REFERENCES contribuintes(id) ON DELETE CASCADE
 ) ENGINE=InnoDB;
 
--- 4. Tabela de Certidões (Negativa, Positiva, etc.)
+
+-- 4Tabela de Certidões e Documentos Oficiais do Setor Tributário
 CREATE TABLE IF NOT EXISTS certidoes (
     id INT AUTO_INCREMENT PRIMARY KEY,
     contribuinte_id INT NOT NULL,
-    codigo_validacao VARCHAR(50) NOT NULL UNIQUE, -- Código para verificação de autenticidade
-    tipo_certidao ENUM('NEGATIVA', 'POSITIVA', 'POSITIVA_COM_EFEITO_DE_NEGATIVA') NOT NULL,
-    finalidade VARCHAR(255) NULL,
+    codigo_validacao VARCHAR(50) NOT NULL UNIQUE, -- Código de autenticidade/automação
+    tipo_certidao ENUM(
+        'NEGATIVA', 
+        'POSITIVA_COM_EFEITO_DE_NEGATIVA', 
+        'COMPROVANTE_INSCRICAO_MUNICIPAL'
+    ) NOT NULL,
+    
+    -- Campos específicos extraídos dos modelos de documentos
+    ramo_atividade VARCHAR(200) NULL,             -- Ex: "Serviço de funerárias", "fins lucrativos"
+    rg VARCHAR(30) NULL,                         -- Ex: "1232192993 SSP/MA" (para PF)
+    tributos_referencia VARCHAR(255) DEFAULT 'ISSQN/ALVARÁ/IPTU/ITU/ITBI',
+    finalidade_uso VARCHAR(255) NULL,            -- Ex: "Fazer prova de Quitação de Tributos"
+    
+    -- Controle de prazos e emissão
     data_emissao TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    prazo_validade_dias INT DEFAULT 90,          -- Padrão de 90 dias conforme Art. 227 do CTM
     data_validade DATE NOT NULL,
+    
+    -- Assinatura e autoridade emissora (Portaria)
+    emissor_nome VARCHAR(100) DEFAULT 'Matheus Viana Lima',
+    emissor_cargo VARCHAR(100) DEFAULT 'Chefe de Arrecadação do Setor Tributário',
+    emissor_portaria VARCHAR(50) DEFAULT 'Portaria 011/2025',
+    
     status ENUM('VALIDA', 'EXPIRADA', 'CANCELADA') DEFAULT 'VALIDA',
-    criado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    
     FOREIGN KEY (contribuinte_id) REFERENCES contribuintes(id) ON DELETE CASCADE
 ) ENGINE=InnoDB;
 
