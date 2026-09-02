@@ -1,0 +1,6 @@
+# Arquivos de sistema/SO
+.DS_Store
+Thumbs.db
+
+# Configurações do ambiente de desenvolvimento local
+*.log
