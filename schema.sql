@@ -21,25 +21,34 @@ CREATE TABLE IF NOT EXISTS contribuintes (
     criado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=InnoDB;
 
--- 3. Tabela do Documento de Arrecadação Municipal (DAM)
+-- Tabela do Documento de Arrecadação Municipal (DAM)
 CREATE TABLE IF NOT EXISTS documentos_dam (
     id INT AUTO_INCREMENT PRIMARY KEY,
-    contribuinte_id INT NOT NULL,
-    numero_dam VARCHAR(30) NOT NULL UNIQUE,
-    receita_tributo VARCHAR(100) NOT NULL, -- Ex: IPTU, ISS, Taxa de Licença, Alvará
-    exercicio INT NOT NULL,                -- Ex: 2026
-    data_emissao TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    contribuinte_id INT NOT NULL,              -- Liga direto com o Contribuinte (Nome, CPF/CNPJ, Endereço, etc.)
+    numero_dam VARCHAR(30) NOT NULL UNIQUE,     -- Código/Nosso Número do DAM
+    codigo_barras VARCHAR(60) NULL,             -- Linha digitável ou código de barras
+    
+    -- Dados da Receita Tributária
+    receita_tributo VARCHAR(100) NOT NULL,      -- Ex: IPTU, ISSQN, Taxa de Licença e Funcionamento, Alvará
+    exercicio INT NOT NULL,                     -- Ex: 2026
+    parcela VARCHAR(10) DEFAULT 'ÚNICA',        -- Ex: 'ÚNICA', '01/05', '02/05'
+    
+    -- Datas e Automação
+    data_emissao TIMESTAMP DEFAULT CURRENT_TIMESTAMP, -- Gera a data/hora exata automaticamente
     data_vencimento DATE NOT NULL,
+    
+    -- Valores Monetários
     valor_original DECIMAL(10, 2) NOT NULL,
     juros_multa DECIMAL(10, 2) DEFAULT 0.00,
     desconto DECIMAL(10, 2) DEFAULT 0.00,
-    valor_total DECIMAL(10, 2) NOT NULL,
-    observacao TEXT NULL,
+    valor_total DECIMAL(10, 2) NOT NULL,        -- (Valor Original + Juros/Multa) - Desconto
+    
+    -- Detalhes Adicionais e Status
+    observacao TEXT NULL,                       -- Informações complementares impressas no DAM
     status ENUM('PENDENTE', 'PAGO', 'CANCELADO') DEFAULT 'PENDENTE',
-    criado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    
     FOREIGN KEY (contribuinte_id) REFERENCES contribuintes(id) ON DELETE CASCADE
 ) ENGINE=InnoDB;
-
 
 -- 4Tabela de Certidões e Documentos Oficiais do Setor Tributário
 CREATE TABLE IF NOT EXISTS certidoes (
@@ -75,14 +84,14 @@ CREATE TABLE IF NOT EXISTS certidoes (
 
 -- 5. Tabela de Notas Fiscais Avulsas
 CREATE TABLE IF NOT EXISTS notas_fiscais (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    prestador_id INT NOT NULL, -- Aponta para a tabela de contribuintes
-    tomador_id INT NOT NULL,   -- Aponta para a tabela de contribuintes
-    numero_nota INT NOT NULL AUTO_INCREMENT UNIQUE,
+    id INT AUTO_INCREMENT PRIMARY KEY,          -- Apenas o ID é AUTO_INCREMENT
+    prestador_id INT NOT NULL,
+    tomador_id INT NOT NULL,
+    numero_nota INT NOT NULL UNIQUE,            -- O número sequencial da nota
     codigo_verificacao VARCHAR(50) NOT NULL UNIQUE,
     discriminacao_servicos TEXT NOT NULL,
     valor_servico DECIMAL(10, 2) NOT NULL,
-    aliquota_iss DECIMAL(5, 2) NOT NULL, -- Ex: 2.00, 3.00, 5.00 (%)
+    aliquota_iss DECIMAL(5, 2) NOT NULL,
     valor_iss DECIMAL(10, 2) NOT NULL,
     data_emissao TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     status ENUM('EMITIDA', 'CANCELADA') DEFAULT 'EMITIDA',
