@@ -26,10 +26,14 @@ $certidoes = $pdo->query("SELECT cert.*, c.nome_razao FROM certidoes cert JOIN c
 
     <div class="container mb-5">
         <!-- CONTRIBUINTES -->
+    
         <div class="d-flex justify-content-between align-items-center mb-3">
-            <h3>Contribuintes Cadastrados</h3>
-            <a href="cadastrar_contribuinte.php" class="btn btn-success">+ Novo Contribuinte</a>
-        </div>
+    <h3>Contribuintes Cadastrados</h3>
+
+        <a href="tributos.php" class="btn btn-outline-primary me-2">⚙️ Gerenciar Tributos</a>
+        <a href="cadastrar_contribuinte.php" class="btn btn-success">+ Novo Contribuinte</a>
+    </div>
+</div>
         <div class="card shadow-sm mb-5">
             <div class="card-body p-0">
                 <table class="table table-hover align-middle mb-0">

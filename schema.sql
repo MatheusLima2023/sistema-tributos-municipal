@@ -119,3 +119,17 @@ ADD COLUMN rg VARCHAR(30) NULL AFTER cpf_cnpj;
 ALTER TABLE documentos_dam 
 ADD COLUMN valor_base DECIMAL(10, 2) DEFAULT 0.00 AFTER parcela,
 ADD COLUMN aliquota DECIMAL(5, 2) DEFAULT 0.00 AFTER valor_base;
+
+CREATE TABLE IF NOT EXISTS tributos (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    nome VARCHAR(100) NOT NULL,
+    aliquota_padrao DECIMAL(5,2) DEFAULT 0.00
+);
+
+-- Insere os tributos padrão municipais
+INSERT INTO tributos (nome, aliquota_padrao) VALUES 
+('ISSQN', 2.00),
+('IPTU', 1.00),
+('Alvará de Licença e Funcionamento', 0.00),
+('ITBI', 2.00),
+('Taxa de Expediente', 0.00);
