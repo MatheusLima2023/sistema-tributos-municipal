@@ -109,3 +109,13 @@ CREATE TABLE IF NOT EXISTS usuarios (
     ativo TINYINT(1) DEFAULT 1,
     criado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=InnoDB;
+
+-- Adiciona campos fixos no cadastro do contribuinte
+ALTER TABLE contribuintes 
+ADD COLUMN ramo_atividade VARCHAR(200) NULL AFTER inscricao_municipal,
+ADD COLUMN rg VARCHAR(30) NULL AFTER cpf_cnpj;
+
+-- Adiciona campos de cálculo de imposto na tabela de DAMs
+ALTER TABLE documentos_dam 
+ADD COLUMN valor_base DECIMAL(10, 2) DEFAULT 0.00 AFTER parcela,
+ADD COLUMN aliquota DECIMAL(5, 2) DEFAULT 0.00 AFTER valor_base;
