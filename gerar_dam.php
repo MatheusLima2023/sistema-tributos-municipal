@@ -1,4 +1,5 @@
 <?php
+require_once 'auth.php';
 require_once 'db.php';
 
 $contribuinte_id = $_GET['id'] ?? null;

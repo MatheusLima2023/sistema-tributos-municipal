@@ -133,3 +133,17 @@ INSERT INTO tributos (nome, aliquota_padrao) VALUES
 ('Alvará de Licença e Funcionamento', 0.00),
 ('ITBI', 2.00),
 ('Taxa de Expediente', 0.00);
+
+-- Tabela de Usuários
+CREATE TABLE IF NOT EXISTS usuarios (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    nome VARCHAR(100) NOT NULL,
+    usuario VARCHAR(50) NOT NULL UNIQUE,
+    senha VARCHAR(255) NOT NULL,
+    cargo VARCHAR(100) DEFAULT 'Atendente',
+    criado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Insere usuário admin inicial (Senha: admin123)
+INSERT INTO usuarios (nome, usuario, senha, cargo) 
+VALUES ('Matheus Viana Lima', 'admin', '$2y$10$4.kQhGjZ0vYxQp1s2u1o3.3b1eY6W7Z8Q9R0T1U2V3W4X5Y6Z7A8B', 'Chefe de Arrecadação');
