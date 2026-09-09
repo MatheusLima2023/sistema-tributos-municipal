@@ -92,3 +92,51 @@ CREATE TABLE IF NOT EXISTS usuarios (
 INSERT INTO usuarios (nome, usuario, senha, cargo) 
 VALUES ('Matheus Viana Lima', 'admin', '$2y$10$4.kQhGjZ0vYxQp1s2u1o3.3b1eY6W7Z8Q9R0T1U2V3W4X5Y6Z7A8B', 'Chefe de Arrecadação')
 ON DUPLICATE KEY UPDATE id=id;
+
+-- Tabela para armazenar as Notas Fiscais Avulsas
+CREATE TABLE notas_fiscais_avulsas (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    numero_nfa INT NOT NULL UNIQUE,
+    data_emissao DATETIME DEFAULT CURRENT_TIMESTAMP,
+    
+    -- Prestador
+    prestador_id INT,
+    prestador_nome VARCHAR(255) NOT NULL,
+    prestador_cpf_cnpj VARCHAR(20) NOT NULL,
+    prestador_endereco VARCHAR(255),
+    prestador_bairro VARCHAR(100),
+    prestador_cidade_uf VARCHAR(100),
+    prestador_cep VARCHAR(10),
+    prestador_inscricao VARCHAR(50),
+    
+    -- Tomador
+    tomador_nome VARCHAR(255) NOT NULL,
+    tomador_cpf_cnpj VARCHAR(20) NOT NULL,
+    tomador_endereco VARCHAR(255),
+    tomador_bairro VARCHAR(100),
+    tomador_cidade_uf VARCHAR(100),
+    tomador_complemento VARCHAR(100),
+    tomador_cep VARCHAR(10),
+    
+    -- Serviço e Valores
+    discriminacao_servico TEXT NOT NULL,
+    descricao_servico TEXT,
+    valor_servicos DECIMAL(10,2) NOT NULL,
+    aliquota_iss DECIMAL(5,2) DEFAULT 5.00,
+    valor_iss DECIMAL(10,2) NOT NULL,
+    aliquota_irrf DECIMAL(5,2) DEFAULT 0.00,
+    valor_irrf DECIMAL(10,2) DEFAULT 0.00,
+    valor_liquido DECIMAL(10,2) NOT NULL,
+    
+    -- Metadados
+    mes_competencia VARCHAR(7) NOT NULL, -- Ex: '09/2026'
+    data_vencimento_iss DATE NOT NULL,
+    status ENUM('EMITIDA', 'CANCELADA') DEFAULT 'EMITIDA',
+    
+    FOREIGN KEY (prestador_id) REFERENCES contribuintes(id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- Relacionamento do DAM com a Nota Fiscal Avulsa
+ALTER TABLE documentos_dam 
+ADD COLUMN nfa_id INT NULL,
+ADD CONSTRAINT fk_dam_nfa FOREIGN KEY (nfa_id) REFERENCES notas_fiscais_avulsas(id) ON DELETE SET NULL;
