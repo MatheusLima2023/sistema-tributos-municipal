@@ -32,127 +32,111 @@ $dams = $stmtD->fetchAll();
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Painel Tributário Municipal</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    <link rel="stylesheet" href="assets/css/dark-mode.css">
+    
 </head>
 <body class="bg-light">
-    <nav class="navbar navbar-dark bg-primary shadow-sm mb-4">
-        <div class="container d-flex justify-content-between align-items-center">
-            <a class="navbar-brand fw-bold" href="index.php">🏛️ Setor Tributário - Centro do Guilherme</a>
-            <div class="text-white d-flex align-items-center gap-3">
-                <small>👤 <strong><?= htmlspecialchars($_SESSION['usuario_nome'] ?? 'Servidor') ?></strong></small>
-                <a href="usuarios.php" class="btn btn-sm btn-light text-dark fw-bold">👥 Usuários</a>
-                <a href="logout.php" class="btn btn-sm btn-outline-light">Sair 🚪</a>
-            </div>
-        </div>
-    </nav>
 
-    <div class="container mb-5">
-        <!-- CONTRIBUINTES -->
-        <div class="d-flex justify-content-between align-items-center mb-3">
-            <h3>Contribuintes Cadastrados</h3>
-            <div>
-                <a href="tributos.php" class="btn btn-outline-primary me-2">⚙️ Tributos</a>
-                <a href="cadastrar_contribuinte.php" class="btn btn-success">+ Novo Contribuinte</a>
-            </div>
-        </div>
+    <div class="position-fixed top-0 end-0 p-3" style="z-index: 1050;">
+        <button id="theme-toggle" class="theme-toggle-btn btn btn-sm btn-outline-secondary rounded-circle" title="Alternar Tema">🌙</button>
+    </div>
 
-        <!-- FILTRO DE BUSCA CONTRIBUINTE -->
-        <form method="GET" class="mb-3">
-            <div class="input-group">
-                <input type="text" name="busca_contribuinte" class="form-control" placeholder="Buscar contribuinte por Nome, CPF/CNPJ ou Inscrição..." value="<?= htmlspecialchars($busca_contribuinte) ?>">
-                <button type="submit" class="btn btn-primary">🔍 Pesquisar</button>
-                <?php if ($busca_contribuinte): ?>
-                    <a href="index.php" class="btn btn-outline-secondary">Limpar</a>
-                <?php endif; ?>
-            </div>
-        </form>
+    <div class="container-fluid">
+        <div class="row">
+            <!-- SIDEBAR BARRA LATERAL FIXA -->
+            <nav class="col-md-3 col-lg-2 d-md-block bg-white sidebar collapse shadow-sm min-vh-100 p-3">
+                <div class="text-center mb-4 border-bottom pb-3">
+                    <img src="img.jpeg" alt="Logo Prefeitura" style="max-height: 50px;" class="mb-2">
+                    <h6 class="fw-bold mb-0">Centro do Guilherme</h6>
+                    <small class="text-muted">Setor Tributário</small>
+                </div>
 
-        <div class="card shadow-sm mb-5">
-            <div class="card-body p-0">
-                <table class="table table-hover align-middle mb-0">
-                    <thead class="table-dark">
-                        <tr>
-                            <th>ID</th>
-                            <th>Nome / Razão Social</th>
-                            <th>CPF / CNPJ</th>
-                            <th>Ações</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <?php foreach ($contribuintes as $c): ?>
-                            <tr>
-                                <td><?= $c['id'] ?></td>
-                                <td><strong><?= htmlspecialchars($c['nome_razao']) ?></strong></td>
-                                <td><?= htmlspecialchars($c['cpf_cnpj']) ?></td>
-                                <td>
-                                    <a href="gerar_dam.php?id=<?= $c['id'] ?>" class="btn btn-sm btn-outline-primary">Gerar DAM</a>
-                                    <a href="emitir_certidao.php?id=<?= $c['id'] ?>" class="btn btn-sm btn-outline-success">Emitir Certidão</a>
-                                    <a href="cadastrar_contribuinte.php?id=<?= $c['id'] ?>" class="btn btn-sm btn-warning">Editar</a>
-                                    <a href="excluir_contribuinte.php?id=<?= $c['id'] ?>" class="btn btn-sm btn-danger" onclick="return confirm('Deseja realmente excluir?')">Excluir</a>
-                                </td>
-                            </tr>
-                        <?php endforeach; ?>
-                        <?php if (empty($contribuintes)): ?>
-                            <tr><td colspan="4" class="text-center py-3 text-muted">Nenhum contribuinte encontrado.</td></tr>
-                        <?php endif; ?>
-                    </tbody>
-                </table>
-            </div>
-        </div>
+                <ul class="nav flex-column gap-1">
+                    <li class="nav-item fw-bold text-muted small mt-2">CONTRIBUINTES</li>
+                    <li class="nav-item">
+                        <a class="nav-link text-dark py-1" href="cadastrar_contribuinte.php"><i class="bi bi-person-plus me-2"></i>Novo Contribuinte</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link text-dark py-1" href="gerar_dam.php"><i class="bi bi-file-earmark-text me-2"></i>Gerar DAM</a>
+                    </li>
 
-        <!-- CONTROLE DE DAMS -->
-        <h3 class="mb-3">Controle de DAMs Emitidos</h3>
+                    <li class="nav-item fw-bold text-muted small border-top pt-2">SISTEMA</li>
+                    <li class="nav-item">
+                        <a class="nav-link text-dark py-1" href="tributos.php"><i class="bi bi-coin me-2"></i>Tributos</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link text-dark py-1" href="usuarios.php"><i class="bi bi-people me-2"></i>Usuários</a>
+                    </li>
+                    <li class="nav-item mt-3 border-top pt-2">
+                        <a class="nav-link text-danger fw-bold py-1" href="logout.php"><i class="bi bi-box-arrow-right me-2"></i>Sair</a>
+                    </li>
+                </ul>
+            </nav>
 
-        <!-- FILTRO DE BUSCA DAM -->
-        <form method="GET" class="mb-3">
-            <div class="input-group">
-                <input type="text" name="busca_dam" class="form-control" placeholder="Buscar por Nº do DAM, Contribuinte ou Tributo..." value="<?= htmlspecialchars($busca_dam) ?>">
-                <button type="submit" class="btn btn-primary">🔍 Pesquisar</button>
-                <?php if ($busca_dam): ?>
-                    <a href="index.php" class="btn btn-outline-secondary">Limpar</a>
-                <?php endif; ?>
-            </div>
-        </form>
+            <!-- PAINEL PRINCIPAL -->
+            <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4 py-4">
+                <div class="card shadow-sm border-0 mb-4">
+                    <div class="card-body">
+                        <h4 class="fw-bold text-center mb-3 text-primary">Contribuintes Cadastrados</h4>
+                        
+                        <div class="row mb-3">
+                            <div class="col-md-6 mx-auto">
+                                <div class="input-group">
+                                    <span class="input-group-text bg-white"><i class="bi bi-search"></i></span>
+                                    <input type="text" id="filtroContribuinte" class="form-control" placeholder="Pesquisar por Nome, CPF/CNPJ ou Inscrição...">
+                                </div>
+                            </div>
+                        </div>
 
-        <div class="card shadow-sm mb-5">
-            <div class="card-body p-0">
-                <table class="table table-striped align-middle mb-0">
-                    <thead class="table-secondary">
-                        <tr>
-                            <th>Nº DAM</th>
-                            <th>Contribuinte</th>
-                            <th>Vencimento</th>
-                            <th>Valor Total</th>
-                            <th>Status Pagamento</th>
-                            <th>Ações</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <?php foreach ($dams as $d): ?>
-                            <tr>
-                                <td><strong><?= $d['numero_dam'] ?></strong></td>
-                                <td><?= htmlspecialchars($d['nome_razao']) ?></td>
-                                <td><?= date('d/m/Y', strtotime($d['data_vencimento'])) ?></td>
-                                <td>R$ <?= number_format($d['valor_total'], 2, ',', '.') ?></td>
-                                <td>
-                                    <span class="badge bg-<?= $d['status'] == 'PAGO' ? 'success' : ($d['status'] == 'PENDENTE' ? 'warning text-dark' : 'danger') ?>">
-                                        <?= $d['status'] ?>
-                                    </span>
-                                </td>
-                                <td>
-                                    <a href="gerar_dam.php?id=<?= $d['contribuinte_id'] ?>&dam_id=<?= $d['id'] ?>" class="btn btn-sm btn-info text-white">Visualizar / Imprimir</a>
-                                    <a href="gerar_dam.php?id=<?= $d['contribuinte_id'] ?>&edit_dam_id=<?= $d['id'] ?>" class="btn btn-sm btn-warning">Editar DAM</a>
-                                </td>
-                            </tr>
-                        <?php endforeach; ?>
-                        <?php if (empty($dams)): ?>
-                            <tr><td colspan="6" class="text-center py-3 text-muted">Nenhum documento DAM encontrado.</td></tr>
-                        <?php endif; ?>
-                    </tbody>
-                </table>
-            </div>
+                        <div class="table-responsive">
+                            <table class="table table-hover align-middle" id="tabelaContribuintes">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th>ID</th>
+                                        <th>Nome / Razão Social</th>
+                                        <th>CPF / CNPJ</th>
+                                        <th>Inscrição Municipal</th>
+                                        <th class="text-center">Ações Rápidas</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <?php foreach ($contribuintes as $c): ?>
+                                    <tr>
+                                        <td><?= $c['id'] ?></td>
+                                        <td><?= htmlspecialchars($c['nome_razao'] ?? '') ?></td>
+                                        <td><?= htmlspecialchars($c['cpf_cnpj'] ?? '') ?></td>
+                                        <td><?= htmlspecialchars($c['inscricao_municipal'] ?? '') ?></td>
+                                        <td class="text-center">
+                                            <a href="gerar_dam.php?contribuinte_id=<?= $c['id'] ?>" class="btn btn-sm btn-outline-primary" title="Gerar DAM"><i class="bi bi-file-earmark-text"></i></a>
+                                            <a href="emitir_certidao.php?id=<?= $c['id'] ?>" class="btn btn-sm btn-outline-success" title="Emitir Certidão"><i class="bi bi-award"></i></a>
+                                            <a href="cadastrar_contribuinte.php?id=<?= $c['id'] ?>" class="btn btn-sm btn-outline-warning" title="Editar"><i class="bi bi-pencil"></i></a>
+                                        </td>
+                                    </tr>
+                                    <?php endforeach; ?>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </main>
         </div>
     </div>
+
+<script src="assets/js/theme-toggle.js"></script>
+<script>
+document.getElementById('filtroContribuinte')?.addEventListener('keyup', function() {
+    let termo = this.value.toLowerCase();
+    let linhas = document.querySelectorAll('#tabelaContribuintes tbody tr');
+    
+    linhas.forEach(linha => {
+        let texto = linha.textContent.toLowerCase();
+        linha.style.display = texto.includes(termo) ? '' : 'none';
+    });
+});
+</script>
 </body>
 </html>

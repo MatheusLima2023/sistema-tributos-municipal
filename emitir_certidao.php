@@ -11,8 +11,8 @@ $certidao_gerada = null;
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $tipo_certidao   = $_POST['tipo_certidao'];
-    $ramo_atividade  = !empty($_POST['ramo_atividade']) ? $_POST['ramo_atividade'] : $contribuinte['ramo_atividade'];
-    $rg              = !empty($_POST['rg']) ? $_POST['rg'] : $contribuinte['rg'];
+    $ramo_atividade  = !empty($_POST['ramo_atividade']) ? $_POST['ramo_atividade'] : ($contribuinte['ramo_atividade'] ?? '');
+    $rg              = !empty($_POST['rg']) ? $_POST['rg'] : ($contribuinte['rg'] ?? '');
     $finalidade_uso  = $_POST['finalidade_uso'];
 
     $codigo_validacao = strtoupper(bin2hex(random_bytes(4))) . '-' . date('Y');
@@ -42,17 +42,20 @@ if (isset($_GET['certidao_id'])) {
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Emissão de Certidões</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    <link rel="stylesheet" href="assets/css/dark-mode.css">
     <style>
-        /* REGRAS PARA FORÇAR IMPRESSÃO EM 1 PÁGINA A4 */
         @media print { 
             @page {
                 size: A4 portrait;
-                margin: 10mm 12mm 10mm 12mm; /* Margens curtas para caber em 1 página */
+                margin: 10mm 12mm 10mm 12mm;
             }
             body { 
                 background: white !important;
+                color: black !important;
                 font-size: 11pt;
             }
             .no-print { display: none !important; }
@@ -69,11 +72,16 @@ if (isset($_GET['certidao_id'])) {
     </style>
 </head>
 <body class="bg-light">
+
+<div class="position-fixed top-0 end-0 p-3 no-print" style="z-index: 1050;">
+    <button id="theme-toggle" class="theme-toggle-btn btn btn-sm btn-outline-secondary rounded-circle" title="Alternar Tema">🌙</button>
+</div>
+
 <div class="container my-4">
     <?php if (!$certidao_gerada): ?>
-        <div class="card shadow-sm no-print mb-4">
+        <div class="card shadow-sm no-print mb-4 border-0">
             <div class="card-header bg-success text-white">
-                <h5 class="mb-0">Gerar Documento / Certidão para: <?= htmlspecialchars($contribuinte['nome_razao']) ?></h5>
+                <h5 class="mb-0">Gerar Documento / Certidão para: <?= htmlspecialchars($contribuinte['nome_razao'] ?? '') ?></h5>
             </div>
             <div class="card-body">
                 <form method="POST">
@@ -113,8 +121,7 @@ if (isset($_GET['certidao_id'])) {
             <a href="index.php" class="btn btn-outline-dark">Painel Principal</a>
         </div>
 
-        <!-- FOLHA DA CERTIDÃO (AJUSTADA PARA A4) -->
-        <div class="card p-4 bg-white border card-certidao mx-auto" style="max-width: 800px;">
+        <div class="card p-4 bg-white border card-certidao mx-auto text-dark" style="max-width: 800px;">
             <div class="text-center mb-3">
                 <img src="img.jpeg" style="max-height: 75px;" alt="Logo Municipal" class="mb-2"><br>
                 <h5 class="fw-bold mb-0">PREFEITURA MUNICIPAL DE CENTRO DO GUILHERME</h5>
@@ -131,18 +138,18 @@ if (isset($_GET['certidao_id'])) {
 
             <div class="my-3 lh-base text-justify" style="font-size: 1.05rem;">
                 <?php if ($certidao_gerada['tipo_certidao'] === 'COMPROVANTE_INSCRICAO_MUNICIPAL'): ?>
-                    <p class="mb-2"><strong>Inscrição Municipal:</strong> <?= htmlspecialchars($contribuinte['inscricao_municipal']) ?></p>
-                    <p class="mb-2"><strong>Razão Social:</strong> <?= htmlspecialchars($contribuinte['nome_razao']) ?></p>
-                    <p class="mb-2"><strong>CPF/CNPJ:</strong> <?= htmlspecialchars($contribuinte['cpf_cnpj']) ?></p>
+                    <p class="mb-2"><strong>Inscrição Municipal:</strong> <?= htmlspecialchars($contribuinte['inscricao_municipal'] ?? '') ?></p>
+                    <p class="mb-2"><strong>Razão Social:</strong> <?= htmlspecialchars($contribuinte['nome_razao'] ?? '') ?></p>
+                    <p class="mb-2"><strong>CPF/CNPJ:</strong> <?= htmlspecialchars($contribuinte['cpf_cnpj'] ?? '') ?></p>
                     <p class="mb-2"><strong>Atividade Principal:</strong> <?= htmlspecialchars($certidao_gerada['ramo_atividade']) ?></p>
-                    <p class="mb-2"><strong>Endereço:</strong> <?= htmlspecialchars($contribuinte['endereco']) ?>, <?= htmlspecialchars($contribuinte['bairro']) ?> - Centro do Guilherme/MA</p>
+                    <p class="mb-2"><strong>Endereço:</strong> <?= htmlspecialchars($contribuinte['endereco'] ?? '') ?>, <?= htmlspecialchars($contribuinte['bairro'] ?? '') ?> - Centro do Guilherme/MA</p>
                 <?php else: ?>
                     <p class="mb-3">
-                        Certifico, para fins de direito que se fizerem necessários, que <?= $contribuinte['tipo_pessoa'] === 'PJ' ? 'a pessoa jurídica com a razão social denominada' : 'a pessoa física denominada' ?>: 
-                        <strong><?= htmlspecialchars($contribuinte['nome_razao']) ?></strong>, 
+                        Certifico, para fins de direito que se fizerem necessários, que <?= ($contribuinte['tipo_pessoa'] ?? 'PF') === 'PJ' ? 'a pessoa jurídica com a razão social denominada' : 'a pessoa física denominada' ?>: 
+                        <strong><?= htmlspecialchars($contribuinte['nome_razao'] ?? '') ?></strong>, 
                         <?= $certidao_gerada['ramo_atividade'] ? 'com ramo de atividade: ' . htmlspecialchars($certidao_gerada['ramo_atividade']) . ',' : '' ?>
-                        localizada na <?= htmlspecialchars($contribuinte['endereco']) ?>, <?= htmlspecialchars($contribuinte['bairro']) ?>, Centro do Guilherme-MA, 
-                        com inscrição no <?= $contribuinte['tipo_pessoa'] === 'PJ' ? 'CNPJ' : 'CPF' ?>: <strong><?= htmlspecialchars($contribuinte['cpf_cnpj']) ?></strong><?= $certidao_gerada['rg'] ? ', inscrito no RG nº: ' . htmlspecialchars($certidao_gerada['rg']) : '' ?>. 
+                        localizada na <?= htmlspecialchars($contribuinte['endereco'] ?? '') ?>, <?= htmlspecialchars($contribuinte['bairro'] ?? '') ?>, Centro do Guilherme-MA, 
+                        com inscrição no <?= ($contribuinte['tipo_pessoa'] ?? 'PF') === 'PJ' ? 'CNPJ' : 'CPF' ?>: <strong><?= htmlspecialchars($contribuinte['cpf_cnpj'] ?? '') ?></strong><?= $certidao_gerada['rg'] ? ', inscrito no RG nº: ' . htmlspecialchars($certidao_gerada['rg']) : '' ?>. 
                         <strong>NADA CONSTA</strong>, em relação a débitos de dívida ativa municipal, de natureza tributária, referente a <?= htmlspecialchars($certidao_gerada['tributos_referencia']) ?>, com o município de Centro do Guilherme-MA.
                     </p>
                     <p class="mb-3">
@@ -159,12 +166,14 @@ if (isset($_GET['certidao_id'])) {
             <div class="mt-4 text-center">
                 <p class="mb-4">Centro do Guilherme - MA, <?= date('d', strtotime($certidao_gerada['data_emissao'])) ?> de <?= date('m') ?> de <?= date('Y') ?></p>
                 <p class="mb-0">__________________________________________________</p>
-                <p class="fw-bold mb-0">Matheus Viana Lima</p>
-                <p class="mb-0 small">Chefe de Arrecadação do Setor Tributário</p>
-                <p class="text-muted small mb-0">Portaria 011/2025</p>
+                <p class="fw-bold mb-0"><?= htmlspecialchars($certidao_gerada['emissor_nome'] ?? 'Matheus Viana Lima') ?></p>
+                <p class="mb-0 small"><?= htmlspecialchars($certidao_gerada['emissor_cargo'] ?? 'Chefe de Arrecadação do Setor Tributário') ?></p>
+                <p class="text-muted small mb-0"><?= htmlspecialchars($certidao_gerada['emissor_portaria'] ?? 'Portaria 011/2025') ?></p>
             </div>
         </div>
     <?php endif; ?>
 </div>
+
+<script src="assets/js/theme-toggle.js"></script>
 </body>
 </html>

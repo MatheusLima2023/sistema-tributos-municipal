@@ -2,16 +2,19 @@
 require_once 'auth.php';
 require_once 'db.php';
 
-$contribuinte_id = $_GET['id'] ?? null;
+$lista_contribuintes = $pdo->query("SELECT id, nome_razao, cpf_cnpj, inscricao_municipal FROM contribuintes ORDER BY nome_razao ASC")->fetchAll();
+
+$contribuinte_id = $_GET['contribuinte_id'] ?? $_GET['id'] ?? null;
 $dam_id          = $_GET['dam_id'] ?? null;
 $edit_dam_id     = $_GET['edit_dam_id'] ?? null;
 
-// Busca dados do contribuinte
-$stmt = $pdo->prepare("SELECT * FROM contribuintes WHERE id = :id");
-$stmt->execute([':id' => $contribuinte_id]);
-$contribuinte = $stmt->fetch();
+$contribuinte = null;
+if ($contribuinte_id) {
+    $stmt = $pdo->prepare("SELECT * FROM contribuintes WHERE id = :id");
+    $stmt->execute([':id' => $contribuinte_id]);
+    $contribuinte = $stmt->fetch();
+}
 
-// Busca lista de tributos cadastrados
 $tributos_list = $pdo->query("SELECT * FROM tributos ORDER BY nome ASC")->fetchAll();
 
 $dam_edit = null;
@@ -22,6 +25,7 @@ if ($edit_dam_id) {
 }
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $contribuinte_id = $_POST['contribuinte_id'] ?? $contribuinte_id;
     $receita_tributo = $_POST['receita_tributo'];
     $exercicio       = (int)$_POST['exercicio'];
     $parcela         = $_POST['parcela'];
@@ -29,7 +33,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $valor_base      = (float)$_POST['valor_base'];
     $aliquota        = (float)$_POST['aliquota'];
     
-    // Fórmula: Base x Alíquota = Imposto
     $valor_original  = $valor_base > 0 && $aliquota > 0 ? $valor_base * ($aliquota / 100) : (float)$_POST['valor_original'];
     $juros_multa     = (float)$_POST['juros_multa'];
     $desconto        = (float)$_POST['desconto'];
@@ -80,8 +83,11 @@ if ($dam_id) {
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Gerar DAM - Centro do Guilherme</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    <link rel="stylesheet" href="assets/css/dark-mode.css">
     <script>
         function calcularImposto() {
             let base = parseFloat(document.getElementById('valor_base').value) || 0;
@@ -95,13 +101,31 @@ if ($dam_id) {
     <style>
         @media print { 
             .no-print { display: none !important; }
-            body { background: white !important; }
+            body { background: white !important; color: black !important; }
         }
     </style>
 </head>
 <body class="bg-light">
+
+<div class="position-fixed top-0 end-0 p-3 no-print" style="z-index: 1050;">
+    <button id="theme-toggle" class="theme-toggle-btn btn btn-sm btn-outline-secondary rounded-circle" title="Alternar Tema">🌙</button>
+</div>
+
 <div class="container my-4">
     <?php if (!$dam_gerado): ?>
+        <div class="card shadow-sm no-print mb-4 border-0">
+            <div class="card-body bg-white rounded p-3">
+                <label class="form-label fw-bold text-primary"><i class="bi bi-search me-2"></i>Buscar Contribuinte Cadastrado</label>
+                <input type="text" id="busca_contribuinte" class="form-control form-control-lg" list="datalistContribuintes" placeholder="Digite o Nome, CPF ou CNPJ para carregar os dados..." autocomplete="off">
+                <datalist id="datalistContribuintes">
+                    <?php foreach ($lista_contribuintes as $item): ?>
+                        <option data-id="<?= $item['id'] ?>" value="<?= htmlspecialchars($item['nome_razao']) ?> - CPF/CNPJ: <?= $item['cpf_cnpj'] ?>"></option>
+                    <?php endforeach; ?>
+                </datalist>
+            </div>
+        </div>
+
+        <?php if ($contribuinte): ?>
         <div class="card shadow-sm no-print mb-4">
             <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
                 <h5 class="mb-0"><?= $edit_dam_id ? 'Editar' : 'Emitir' ?> DAM - Contribuinte: <?= htmlspecialchars($contribuinte['nome_razao']) ?></h5>
@@ -109,6 +133,8 @@ if ($dam_id) {
             </div>
             <div class="card-body">
                 <form method="POST">
+                    <input type="hidden" name="contribuinte_id" value="<?= $contribuinte['id'] ?>">
+                    
                     <div class="row g-3">
                         <div class="col-md-4">
                             <label class="form-label">Tributo / Receita *</label>
@@ -155,6 +181,12 @@ if ($dam_id) {
                 </form>
             </div>
         </div>
+        <?php else: ?>
+            <div class="alert alert-info no-print text-center">
+                <i class="bi bi-info-circle me-2"></i> Utilize a barra acima para pesquisar e selecionar o contribuinte que receberá a emissão do DAM.
+            </div>
+        <?php endif; ?>
+
     <?php else: ?>
         <div class="no-print mb-3">
             <button onclick="window.print()" class="btn btn-primary">🖨️ Imprimir</button>
@@ -162,8 +194,7 @@ if ($dam_id) {
             <a href="index.php" class="btn btn-outline-dark">Painel Principal</a>
         </div>
 
-        <!-- LAYOUT COMPLETO DO DAM IMPRESSO -->
-        <div class="card p-4 bg-white border border-dark">
+        <div class="card p-4 bg-white border border-dark text-dark">
             <div class="row align-items-center border-bottom pb-3 mb-3">
                 <div class="col-2 text-center">
                     <img src="img.jpeg" style="max-height: 75px;" alt="Logo Municipal">
@@ -178,23 +209,21 @@ if ($dam_id) {
                 </div>
             </div>
 
-            <!-- DADOS DO CONTRIBUINTE COM ENDEREÇO -->
             <div class="row mb-2">
                 <div class="col-8 border p-2">
                     <small class="text-muted d-block">CONTRIBUINTE / RAZÃO SOCIAL</small>
-                    <strong><?= htmlspecialchars($contribuinte['nome_razao']) ?></strong>
+                    <strong><?= htmlspecialchars($contribuinte['nome_razao'] ?? '') ?></strong>
                 </div>
                 <div class="col-4 border p-2">
                     <small class="text-muted d-block">CPF / CNPJ</small>
-                    <strong><?= htmlspecialchars($contribuinte['cpf_cnpj']) ?></strong>
+                    <strong><?= htmlspecialchars($contribuinte['cpf_cnpj'] ?? '') ?></strong>
                 </div>
                 <div class="col-12 border border-top-0 p-2">
                     <small class="text-muted d-block">ENDEREÇO</small>
-                    <span><?= htmlspecialchars($contribuinte['endereco']) ?>, <?= htmlspecialchars($contribuinte['bairro']) ?> - <?= htmlspecialchars($contribuinte['cidade']) ?>/<?= htmlspecialchars($contribuinte['uf']) ?></span>
+                    <span><?= htmlspecialchars($contribuinte['endereco'] ?? '') ?>, <?= htmlspecialchars($contribuinte['numero'] ?? 'S/N') ?> - <?= htmlspecialchars($contribuinte['bairro'] ?? '') ?> - <?= htmlspecialchars($contribuinte['cidade'] ?? '') ?>/<?= htmlspecialchars($contribuinte['uf'] ?? '') ?></span>
                 </div>
             </div>
 
-            <!-- TRIBUTO, EXERCÍCIO, PARCELA E VENCIMENTO -->
             <div class="row mb-2">
                 <div class="col-4 border p-2">
                     <small class="text-muted d-block">RECEITA / TRIBUTO</small>
@@ -214,7 +243,6 @@ if ($dam_id) {
                 </div>
             </div>
 
-            <!-- VALORES E CÁLCULOS -->
             <div class="row mb-2">
                 <div class="col-3 border p-2">
                     <small class="text-muted d-block">BASE DE CÁLCULO</small>
@@ -234,7 +262,6 @@ if ($dam_id) {
                 </div>
             </div>
 
-            <!-- OBSERVAÇÕES -->
             <?php if (!empty($dam_gerado['observacao'])): ?>
                 <div class="border p-2 mb-2">
                     <small class="text-muted d-block">INSTRUÇÕES / OBSERVAÇÕES</small>
@@ -242,7 +269,6 @@ if ($dam_id) {
                 </div>
             <?php endif; ?>
 
-            <!-- DADOS BANCÁRIOS -->
             <div class="border p-3 my-2 bg-light">
                 <h6 class="fw-bold mb-1">DADOS BANCÁRIOS PARA PAGAMENTO:</h6>
                 <p class="mb-0"><strong>Banco:</strong> Bradesco | <strong>Agência:</strong> 1772-8 | <strong>Conta Corrente:</strong> 8413-1</p>
@@ -251,5 +277,19 @@ if ($dam_id) {
         </div>
     <?php endif; ?>
 </div>
+
+<script src="assets/js/theme-toggle.js"></script>
+<script>
+document.getElementById('busca_contribuinte')?.addEventListener('input', function() {
+    let val = this.value;
+    let opts = document.querySelectorAll('#datalistContribuintes option');
+    for (let i = 0; i < opts.length; i++) {
+        if (opts[i].value === val) {
+            window.location.href = '?contribuinte_id=' + opts[i].getAttribute('data-id');
+            break;
+        }
+    }
+});
+</script>
 </body>
 </html>
