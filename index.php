@@ -63,6 +63,12 @@ $dams = $stmtD->fetchAll();
                     <li class="nav-item">
                         <a class="nav-link text-dark py-1" href="gerar_dam.php"><i class="bi bi-file-earmark-text me-2"></i>Gerar DAM</a>
                     </li>
+                    <li class="nav-item">
+                        <a href="emitir_nfa.php" class="nav-link <?= (basename($_SERVER['PHP_SELF']) == 'emitir_nfa.php') ? 'active' : ''; ?>">
+                         <i class="bi bi-receipt me-2"></i>
+                                        <span>Emitir Nota Avulsa</span>
+                         </a>
+                    </li>
 
                     <li class="nav-item fw-bold text-muted small border-top pt-2">SISTEMA</li>
                     <li class="nav-item">

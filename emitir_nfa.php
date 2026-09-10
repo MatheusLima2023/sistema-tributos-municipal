@@ -7,6 +7,24 @@ $erro = '';
 $prestador = null;
 $nfa_gerada = null;
 
+// Lógica para Excluir NFA
+if (isset($_GET['action']) && $_GET['action'] === 'excluir' && !empty($_GET['id_nfa'])) {
+    $id_nfa = (int)$_GET['id_nfa'];
+    $stmt_del = $pdo->prepare("DELETE FROM notas_fiscais_avulsas WHERE id = :id");
+    $stmt_del->execute([':id' => $id_nfa]);
+    
+    header("Location: emitir_nfa.php?msg=deleted");
+    exit;
+}
+// Consulta para listar as NFAs emitidas com os nomes dos prestadores (nome_razao)
+$query_nfas = "SELECT nfa.*, p.nome_razao AS prestador_nome 
+               FROM notas_fiscais_avulsas nfa 
+               JOIN contribuintes p ON nfa.contribuinte_prestador_id = p.id 
+               ORDER BY nfa.id DESC";
+$stmt_nfas = $pdo->prepare($query_nfas);
+$stmt_nfas->execute();
+$lista_nfas = $stmt_nfas->fetchAll(PDO::FETCH_ASSOC);
+
 // Busca o contribuinte prestador se informado o ID via GET
 $prestador_id = isset($_GET['prestador_id']) ? (int)$_GET['prestador_id'] : 0;
 if ($prestador_id > 0) {
@@ -31,7 +49,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         try {
             $pdo->beginTransaction();
 
-            $stmtNFA = $pdo->prepare("
+           $stmtNFA = $pdo->prepare("
                 INSERT INTO notas_fiscais_avulsas 
                 (contribuinte_prestador_id, contribuinte_tomador_id, numero_nfa, descricao_servico, valor_servico, aliquota_iss, valor_iss) 
                 VALUES (:p_id, :t_id, :num, :desc, :v_serv, :aliq, :v_iss)
@@ -212,6 +230,66 @@ $todosContribuintes = $pdo->query("SELECT id, nome_razao, cpf_cnpj FROM contribu
                 </form>
             </div>
         </div>
+        <!-- Seção: Notas Fiscais Avulsas Emitidas -->
+<div class="card bg-dark text-white border-secondary mt-4">
+    <div class="card-header border-secondary d-flex justify-content-between align-items-center">
+        <h5 class="mb-0"><i class="bi bi-list-check me-2"></i>Notas Fiscais Avulsas Emitidas</h5>
+    </div>
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="table table-dark table-hover align-middle mb-0">
+                <thead>
+                    <tr>
+                        <th>Nº NFA</th>
+                        <th>Prestador</th>
+                        <th>Valor Serviço</th>
+                        <th>Valor ISS</th>
+                        <th>Data Emissão</th>
+                        <th>Status</th>
+                        <th class="text-center">Ações</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <?php if (!empty($lista_nfas)): ?>
+                        <?php foreach ($lista_nfas as $nfa): ?>
+                            <tr>
+                                <td><strong><?= htmlspecialchars($nfa['numero_nfa']) ?></strong></td>
+                                <td><?= htmlspecialchars($nfa['prestador_nome']) ?></td>
+                                <td>R$ <?= number_format($nfa['valor_servico'], 2, ',', '.') ?></td>
+                                <td>R$ <?= number_format($nfa['valor_iss'], 2, ',', '.') ?></td>
+                                <td><?= date('d/m/Y H:i', strtotime($nfa['data_emissao'])) ?></td>
+                                <td>
+                                    <span class="badge bg-<?= $nfa['status'] === 'EMITIDA' ? 'success' : 'danger' ?>">
+                                        <?= $nfa['status'] ?>
+                                    </span>
+                                </td>
+                                <td class="text-center">
+                                    <!-- Botão Imprimir -->
+                                    <a href="imprimir_nfa.php?id=<?= $nfa['id'] ?>" target="_blank" class="btn btn-sm btn-outline-info me-1" title="Imprimir Nota">
+                                        <i class="bi bi-printer"></i>
+                                    </a>
+                                    <a href="editar_nfa.php?id=<?= $nfa['id'] ?>" class="btn btn-sm btn-outline-warning me-1" title="Editar">
+                                        <i class="bi bi-pencil"></i>
+                                    </a>
+                                    <a href="emitir_nfa.php?action=excluir&id_nfa=<?= $nfa['id'] ?>" 
+                                       class="btn btn-sm btn-outline-danger" 
+                                       onclick="return confirm('Tem certeza que deseja excluir esta NFA?');" 
+                                       title="Excluir">
+                                        <i class="bi bi-trash"></i>
+                                    </a>
+                                </td>
+                            </tr>
+                        <?php endforeach; ?>
+                    <?php else: ?>
+                        <tr>
+                            <td colspan="7" class="text-center text-muted py-3">Nenhuma Nota Fiscal Avulsa emitida até o momento.</td>
+                        </tr>
+                    <?php endif; ?>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
     <?php endif; ?>
 </div>
 
