@@ -135,8 +135,8 @@ $todosContribuintes = $pdo->query("SELECT id, nome_razao, cpf_cnpj FROM contribu
         <!-- Visualização do Espelho da NFA Emitida -->
         <div class="card shadow-sm border-secondary mb-4">
             <div class="card-header bg-dark text-white d-flex justify-content-between align-items-center">
-                <h5 class="mb-0">NOTA FISCAL AVULSA DE SERVIÇOS - Nº <?= $nfa_gerada['numero_nfa'] ?></h5>
-                <span class="badge bg-success">STATUS: <?= $nfa_gerada['status'] ?></span>
+                <h5 class="mb-0">NOTA FISCAL AVULSA DE SERVIÇOS - Nº <?= htmlspecialchars($nfa_gerada['numero_nfa']) ?></h5>
+                <span class="badge bg-success">STATUS: <?= htmlspecialchars($nfa_gerada['status'] ?? 'EMITIDA') ?></span>
             </div>
             <div class="card-body">
                 <div class="row mb-3">
@@ -172,7 +172,9 @@ $todosContribuintes = $pdo->query("SELECT id, nome_razao, cpf_cnpj FROM contribu
                 </div>
             </div>
             <div class="card-footer text-end no-print">
-                <button onclick="window.print();" class="btn btn-primary"><i class="bi bi-printer"></i> Imprimir Nota</button>
+                <a href="imprimir_nfa.php?id=<?= $nfa_gerada['id'] ?>" target="_blank" class="btn btn-primary fw-bold">
+                    <i class="bi bi-printer"></i> Imprimir Nota
+                </a>
                 <a href="emitir_nfa.php" class="btn btn-outline-secondary">Nova Emissão</a>
             </div>
         </div>
