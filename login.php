@@ -1,6 +1,7 @@
 <?php
-ini_set('display_errors', 1);
-ini_set('display_startup_errors', 1);
+ini_set('display_errors', 0);
+ini_set('display_startup_errors', 0);
+ini_set('log_errors', 1);
 error_reporting(E_ALL);
 session_start();
 require_once 'db.php';
@@ -21,7 +22,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $stmt->execute([':usuario' => $usuario_input]);
         $user = $stmt->fetch();
 
-        if ($user && ($senha_input === 'admin123' || password_verify($senha_input, $user['senha']))) {
+        if ($user && password_verify($senha_input, $user['senha'])) {
+            session_regenerate_id(true);
             $_SESSION['usuario_id']   = $user['id'];
             $_SESSION['usuario_nome'] = $user['nome'];
             $_SESSION['usuario_cargo'] = $user['cargo'];

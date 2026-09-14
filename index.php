@@ -1,11 +1,11 @@
 <?php
-ini_set('display_errors', 1);
-ini_set('display_startup_errors', 1);
+ini_set('display_errors', 0);
+ini_set('display_startup_errors', 0);
+ini_set('log_errors', 1);
 error_reporting(E_ALL);
 
 require_once 'auth.php';
 require_once 'db.php';
-...
 
 // Filtro Contribuintes
 $busca_contribuinte = trim($_GET['busca_contribuinte'] ?? '');
@@ -125,7 +125,7 @@ $dams = $stmtD->fetchAll();
                                             <a href="gerar_dam.php?contribuinte_id=<?= $c['id'] ?>" class="btn btn-sm btn-outline-primary" title="Gerar DAM"><i class="bi bi-file-earmark-text"></i></a>
                                             <a href="emitir_certidao.php?id=<?= $c['id'] ?>" class="btn btn-sm btn-outline-success" title="Emitir Certidão"><i class="bi bi-award"></i></a>
                                             <a href="cadastrar_contribuinte.php?id=<?= $c['id'] ?>" class="btn btn-sm btn-outline-warning" title="Editar"><i class="bi bi-pencil"></i></a>   
-                                            <a href="emitir_nfa.php?id=<?= $c['id'] ?>" class="btn btn-outline-success" title="Emitir Nota Avulsa"><i class="bi bi-file-earmark-text"></i></a>
+                                            <a href="excluir_contribuinte.php?id=<?= $c['id'] ?>" class="btn btn-outline-danger" onclick="return confirm('Tem certeza que deseja excluir este contribuinte? Essa ação também apaga certidões e DAMs vinculados a ele.');" title="Excluir Contribuinte"><i class="bi bi-trash"></i></a>
                                         </td>
                                     </tr>
                                     <?php endforeach; ?>

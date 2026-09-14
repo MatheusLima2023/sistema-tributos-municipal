@@ -5,7 +5,7 @@ $user = 'if0_42842841';
 $pass = 'e2Y6tcXDeKdIfC';
 $charset = 'utf8mb4';
 
-\(dsn = "mysql:host=" .\)host . ";dbname=" . \(dbname . ";charset=" .\)charset;
+$dsn = "mysql:host=" . $host . ";dbname=" . $dbname . ";charset=" . $charset;
 
 $options = [
     PDO::ATTR_ERRMODE            => PDO::ERRMODE_EXCEPTION,
@@ -14,7 +14,8 @@ $options = [
 ];
 
 try {
-    \(pdo = new PDO(\)dsn, \(user,\)pass, $options);
+    $pdo = new PDO($dsn, $user, $pass, $options);
 } catch (PDOException $e) {
-    die("Erro na conexão com o banco de dados: " . $e->getMessage());
+    error_log("Erro na conexão com o banco de dados: " . $e->getMessage());
+    die("Não foi possível conectar ao sistema no momento. Tente novamente mais tarde.");
 }
