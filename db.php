@@ -1,11 +1,12 @@
 <?php
-$host = 'localhost';
-$db   = 'tributos_db';
-$user = 'root';
-$pass = '';
+$host = 'sql202.infinityfree.com';
+$dbname = 'if0_42842841_tributos';
+$user = 'if0_42842841';
+$pass = 'e2Y6tcXDeKdIfC';
 $charset = 'utf8mb4';
 
-$dsn = "mysql:host={$host};dbname={$db};charset={$charset}";
+\(dsn = "mysql:host=" .\)host . ";dbname=" . \(dbname . ";charset=" .\)charset;
+
 $options = [
     PDO::ATTR_ERRMODE            => PDO::ERRMODE_EXCEPTION,
     PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
@@ -13,7 +14,7 @@ $options = [
 ];
 
 try {
-    $pdo = new PDO($dsn, $user, $pass, $options);
-} catch (\PDOException $e) {
-    throw new \PDOException($e->getMessage(), (int)$e->getCode());
+    \(pdo = new PDO(\)dsn, \(user,\)pass, $options);
+} catch (PDOException $e) {
+    die("Erro na conexão com o banco de dados: " . $e->getMessage());
 }
