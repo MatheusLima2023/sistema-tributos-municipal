@@ -1,1 +1,2 @@
-getMessage(); } ?>
+getMessage();
+}
