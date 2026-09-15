@@ -272,7 +272,7 @@ if (isset($_GET['certidao_id'])) {
                         Certifico, para fins de direito que se fizerem necessários, que <?= ($contribuinte['tipo_pessoa'] ?? 'PF') === 'PJ' ? 'a pessoa jurídica com a razão social denominada' : 'a pessoa física denominada' ?>: 
                         <strong><?= htmlspecialchars($contribuinte['nome_razao'] ?? '') ?></strong>, 
                         <?= $certidao_gerada['ramo_atividade'] ? 'com ramo de atividade: ' . htmlspecialchars($certidao_gerada['ramo_atividade']) . ',' : '' ?>
-                        localizada na <?= htmlspecialchars($contribuinte['endereco'] ?? '') ?>, <?= htmlspecialchars($contribuinte['bairro'] ?? '') ?>, Centro do Guilherme-MA, 
+                        localizada na <?= htmlspecialchars($contribuinte['endereco'] ?? '') ?>, nº<?= htmlspecialchars($contribuinte['numero'] ?? 'S/N') ?>, <?= htmlspecialchars($contribuinte['bairro'] ?? '') ?>, Centro do Guilherme-MA, 
                         com inscrição no <?= ($contribuinte['tipo_pessoa'] ?? 'PF') === 'PJ' ? 'CNPJ' : 'CPF' ?>: <strong><?= htmlspecialchars($contribuinte['cpf_cnpj'] ?? '') ?></strong><?= $certidao_gerada['rg'] ? ', inscrito no RG nº: ' . htmlspecialchars($certidao_gerada['rg']) : '' ?>. 
                         <strong>NADA CONSTA</strong>, em relação a débitos de dívida ativa municipal, de natureza tributária, referente a <?= htmlspecialchars($certidao_gerada['tributos_referencia']) ?>, com o município de Centro do Guilherme-MA.
                     </p>
@@ -283,7 +283,13 @@ if (isset($_GET['certidao_id'])) {
             <?php endif; ?>
 
             <div class="text-center certidao-assinatura">
-                <p class="mb-3">Centro do Guilherme - MA, <?= date('d', strtotime($certidao_gerada['data_emissao'])) ?> de <?= date('m') ?> de <?= date('Y') ?></p>
+                <p class="mb-3">Centro do Guilherme - MA, <?= date('d', strtotime($certidao_gerada['data_emissao'])) ?> de <?php $meses = [ '01'=>'janeiro', '02' => 'fevereiro', '03' => 'março', '04' => 'abril',
+    '05' => 'maio', '06' => 'junho', '07' => 'julho', '08' => 'agosto',
+    '09' => 'setembro', '10' => 'outubro', '11' => 'novembro', '12' => 'dezembro'
+];
+echo $meses[date('m')];
+?> de <?= date('Y') ?></p>
+                <p></p>
                 <p class="mb-0">__________________________________________________</p>
                 <p class="fw-bold mb-0"><?= htmlspecialchars($certidao_gerada['emissor_nome'] ?? 'Matheus Viana Lima') ?></p>
                 <p class="mb-0 small"><?= htmlspecialchars($certidao_gerada['emissor_cargo'] ?? 'Chefe de Arrecadação do Setor Tributário') ?></p>
