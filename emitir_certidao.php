@@ -63,11 +63,86 @@ if (isset($_GET['certidao_id'])) {
                 border: none !important;
                 padding: 0 !important;
                 box-shadow: none !important;
+                min-height: 277mm !important;
+            }
+            .certidao-cabecalho img { max-height: 100px !important; }
+            .card-certidao::before {
+                background-size: 480px auto !important;
+                opacity: 0.16 !important;
+                filter: grayscale(100%) contrast(1.5);
             }
         }
         .text-justify {
             text-align: justify;
             text-justify: inter-word;
+        }
+
+        /* ===== Layout formal/tradicional da certidão ===== */
+        .card-certidao {
+            font-family: Arial, Helvetica, sans-serif;
+            position: relative;
+            background: #fffdf9;
+            padding: 1.75rem 2rem !important;
+            border: 1px solid #b8a97a !important;
+            box-shadow: 0 0 0 1px #b8a97a inset, 0 0 0 6px #fffdf9 inset, 0 0 0 7px #b8a97a inset !important;
+            display: flex;
+            flex-direction: column;
+            min-height: 277mm;
+        }
+        .card-certidao::before {
+            content: "";
+            position: absolute;
+            inset: 0;
+            background: url('img.jpeg') center center no-repeat;
+            background-size: 460px auto;
+            opacity: 0.1;
+            filter: grayscale(60%) contrast(1.2);
+            pointer-events: none;
+        }
+        .card-certidao > * { position: relative; z-index: 1; }
+        .certidao-cabecalho .estado {
+            font-size: 0.75rem;
+            letter-spacing: 2.5px;
+            text-transform: uppercase;
+            color: #555;
+            margin-bottom: 3px;
+        }
+        .certidao-cabecalho h5 { letter-spacing: 0.5px; }
+        .certidao-cabecalho img { max-height: 80px !important; }
+        .certidao-titulo-box {
+            border-top: 3px double #333;
+            border-bottom: 3px double #333;
+            padding: 6px;
+            margin: 10px 0 14px;
+            font-size: 1rem;
+            letter-spacing: 1px;
+        }
+        .certidao-dados-grid {
+            border: 1px solid #999;
+            margin-bottom: 1rem;
+        }
+        .certidao-dados-grid .campo {
+            border: 1px solid #ddd;
+            padding: 6px 12px;
+            font-size: 0.9rem;
+        }
+        .certidao-dados-grid .rotulo {
+            font-size: 0.65rem;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+            color: #777;
+            display: block;
+            margin-bottom: 2px;
+        }
+        .certidao-assinatura {
+            border-top: 1px solid #999;
+            padding-top: 1rem;
+            margin-top: auto;
+        }
+        .certidao-rodape-legal {
+            font-size: 0.7rem;
+            color: #888;
+            letter-spacing: 0.3px;
         }
     </style>
 </head>
@@ -122,29 +197,78 @@ if (isset($_GET['certidao_id'])) {
         </div>
 
         <div class="card p-4 bg-white border card-certidao mx-auto text-dark" style="max-width: 800px;">
-            <div class="text-center mb-3">
-                <img src="img.jpeg" style="max-height: 75px;" alt="Logo Municipal" class="mb-2"><br>
+            <div class="text-center mb-2 certidao-cabecalho">
+                <img src="img.jpeg" style="max-height: 80px;" alt="Brasão Municipal" class="mb-2"><br>
+                <div class="estado">Estado do Maranhão</div>
                 <h5 class="fw-bold mb-0">PREFEITURA MUNICIPAL DE CENTRO DO GUILHERME</h5>
-                <h6 class="text-muted small">Secretaria Municipal da Fazenda Pública - Setor de Arrecadação</h6>
-                <hr class="my-2">
-                <h6 class="fw-bold text-uppercase mt-2">
-                    <?php 
-                        if ($certidao_gerada['tipo_certidao'] === 'NEGATIVA') echo "CERTIDÃO NEGATIVA DE DÉBITOS";
-                        elseif ($certidao_gerada['tipo_certidao'] === 'POSITIVA_COM_EFEITO_DE_NEGATIVA') echo "CERTIDÃO POSITIVA COM EFEITO NEGATIVO DE DÉBITOS RELATIVOS AOS TRIBUTOS MUNICIPAIS E À DÍVIDA ATIVA DO MUNICÍPIO";
-                        else echo "COMPROVANTE DE INSCRIÇÃO MUNICIPAL";
-                    ?>
-                </h6>
+                <h6 class="text-muted small mb-0">Secretaria Municipal da Fazenda Pública — Setor de Arrecadação</h6>
             </div>
 
-            <div class="my-3 lh-base text-justify" style="font-size: 1.05rem;">
-                <?php if ($certidao_gerada['tipo_certidao'] === 'COMPROVANTE_INSCRICAO_MUNICIPAL'): ?>
-                    <p class="mb-2"><strong>Inscrição Municipal:</strong> <?= htmlspecialchars($contribuinte['inscricao_municipal'] ?? '') ?></p>
-                    <p class="mb-2"><strong>Razão Social:</strong> <?= htmlspecialchars($contribuinte['nome_razao'] ?? '') ?></p>
-                    <p class="mb-2"><strong>CPF/CNPJ:</strong> <?= htmlspecialchars($contribuinte['cpf_cnpj'] ?? '') ?></p>
-                    <p class="mb-2"><strong>Atividade Principal:</strong> <?= htmlspecialchars($certidao_gerada['ramo_atividade']) ?></p>
-                    <p class="mb-2"><strong>Endereço:</strong> <?= htmlspecialchars($contribuinte['endereco'] ?? '') ?>, <?= htmlspecialchars($contribuinte['bairro'] ?? '') ?> - Centro do Guilherme/MA</p>
-                <?php else: ?>
-                    <p class="mb-3">
+            <div class="text-center fw-bold text-uppercase certidao-titulo-box">
+                <?php 
+                    if ($certidao_gerada['tipo_certidao'] === 'NEGATIVA') echo "CERTIDÃO NEGATIVA DE DÉBITOS";
+                    elseif ($certidao_gerada['tipo_certidao'] === 'POSITIVA_COM_EFEITO_DE_NEGATIVA') echo "CERTIDÃO POSITIVA COM EFEITO NEGATIVO DE DÉBITOS RELATIVOS AOS TRIBUTOS MUNICIPAIS E À DÍVIDA ATIVA DO MUNICÍPIO";
+                    else echo "COMPROVANTE DE INSCRIÇÃO MUNICIPAL";
+                ?>
+            </div>
+
+            <?php if ($certidao_gerada['tipo_certidao'] === 'COMPROVANTE_INSCRICAO_MUNICIPAL'): ?>
+                <div class="certidao-dados-grid">
+                    <div class="row g-0">
+                        <div class="col-md-6 campo">
+                            <span class="rotulo">Inscrição Municipal</span>
+                            <?= htmlspecialchars($contribuinte['inscricao_municipal'] ?? '') ?>
+                        </div>
+                        <div class="col-md-6 campo">
+                            <span class="rotulo">CPF/CNPJ</span>
+                            <?= htmlspecialchars($contribuinte['cpf_cnpj'] ?? '') ?>
+                        </div>
+                        <div class="col-md-12 campo">
+                            <span class="rotulo">Razão Social</span>
+                            <?= htmlspecialchars($contribuinte['nome_razao'] ?? '') ?>
+                        </div>
+                        <div class="col-md-6 campo">
+                            <span class="rotulo">Atividade Principal</span>
+                            <?= htmlspecialchars($certidao_gerada['ramo_atividade']) ?>
+                        </div>
+                        <div class="col-md-6 campo">
+                            <span class="rotulo">Endereço</span>
+                            <?= htmlspecialchars($contribuinte['endereco'] ?? '') ?>, <?= htmlspecialchars($contribuinte['numero'] ?? 'S/N') ?> - <?= htmlspecialchars($contribuinte['bairro'] ?? '') ?> - Centro do Guilherme/MA
+                        </div>
+                    </div>
+                </div>
+            <?php else: ?>
+                <div class="certidao-dados-grid">
+                    <div class="row g-0">
+                        <div class="col-md-8 campo">
+                            <span class="rotulo"><?= ($contribuinte['tipo_pessoa'] ?? 'PF') === 'PJ' ? 'Razão Social' : 'Nome' ?></span>
+                            <?= htmlspecialchars($contribuinte['nome_razao'] ?? '') ?>
+                        </div>
+                        <div class="col-md-4 campo">
+                            <span class="rotulo"><?= ($contribuinte['tipo_pessoa'] ?? 'PF') === 'PJ' ? 'CNPJ' : 'CPF' ?></span>
+                            <?= htmlspecialchars($contribuinte['cpf_cnpj'] ?? '') ?>
+                        </div>
+                        <?php if (!empty($certidao_gerada['rg'])): ?>
+                        <div class="col-md-4 campo">
+                            <span class="rotulo">RG</span>
+                            <?= htmlspecialchars($certidao_gerada['rg']) ?>
+                        </div>
+                        <?php endif; ?>
+                        <?php if (!empty($certidao_gerada['ramo_atividade'])): ?>
+                        <div class="col-md-<?= !empty($certidao_gerada['rg']) ? '8' : '12' ?> campo">
+                            <span class="rotulo">Ramo de Atividade</span>
+                            <?= htmlspecialchars($certidao_gerada['ramo_atividade']) ?>
+                        </div>
+                        <?php endif; ?>
+                        <div class="col-md-12 campo">
+                            <span class="rotulo">Endereço</span>
+                            <?= htmlspecialchars($contribuinte['endereco'] ?? '') ?>, <?= htmlspecialchars($contribuinte['numero'] ?? 'S/N') ?> - <?= htmlspecialchars($contribuinte['bairro'] ?? '') ?>, Centro do Guilherme-MA
+                        </div>
+                    </div>
+                </div>
+
+                <div class="lh-base text-justify" style="font-size: 0.95rem;">
+                    <p class="mb-2">
                         Certifico, para fins de direito que se fizerem necessários, que <?= ($contribuinte['tipo_pessoa'] ?? 'PF') === 'PJ' ? 'a pessoa jurídica com a razão social denominada' : 'a pessoa física denominada' ?>: 
                         <strong><?= htmlspecialchars($contribuinte['nome_razao'] ?? '') ?></strong>, 
                         <?= $certidao_gerada['ramo_atividade'] ? 'com ramo de atividade: ' . htmlspecialchars($certidao_gerada['ramo_atividade']) . ',' : '' ?>
@@ -152,23 +276,20 @@ if (isset($_GET['certidao_id'])) {
                         com inscrição no <?= ($contribuinte['tipo_pessoa'] ?? 'PF') === 'PJ' ? 'CNPJ' : 'CPF' ?>: <strong><?= htmlspecialchars($contribuinte['cpf_cnpj'] ?? '') ?></strong><?= $certidao_gerada['rg'] ? ', inscrito no RG nº: ' . htmlspecialchars($certidao_gerada['rg']) : '' ?>. 
                         <strong>NADA CONSTA</strong>, em relação a débitos de dívida ativa municipal, de natureza tributária, referente a <?= htmlspecialchars($certidao_gerada['tributos_referencia']) ?>, com o município de Centro do Guilherme-MA.
                     </p>
-                    <p class="mb-3">
+                    <p class="mb-2 fst-italic certidao-rodape-legal" style="font-size: 0.8rem; border-top: 1px solid #ddd; padding-top: 8px;">
                         <strong>Fundamentação Legal:</strong> Esta certidão é expedida nos estritos termos do Artigo 225º e parágrafo único da Lei do Código Tributário Municipal de Centro do Guilherme - MA, fazendo prova de quitação de tributos municipais requerida pelo interessado. A presente certidão goza de eficácia liberatória pelo prazo de 90 (noventa) dias a contar da data de sua expedição, ressalvado o direito da Fazenda Municipal de cobrar quaisquer dívidas que venham a ser apuradas posteriormente (Art. 227º do CTM).
                     </p>
-                <?php endif; ?>
-            </div>
+                </div>
+            <?php endif; ?>
 
-            <div class="border p-2 bg-light rounded text-center my-2">
-                <small class="d-block text-muted">CÓDIGO DE VALIDAÇÃO DE AUTENTICIDADE</small>
-                <strong class="font-monospace fs-6"><?= $certidao_gerada['codigo_validacao'] ?></strong>
-            </div>
-
-            <div class="mt-4 text-center">
-                <p class="mb-4">Centro do Guilherme - MA, <?= date('d', strtotime($certidao_gerada['data_emissao'])) ?> de <?= date('m') ?> de <?= date('Y') ?></p>
+            <div class="text-center certidao-assinatura">
+                <p class="mb-3">Centro do Guilherme - MA, <?= date('d', strtotime($certidao_gerada['data_emissao'])) ?> de <?= date('m') ?> de <?= date('Y') ?></p>
                 <p class="mb-0">__________________________________________________</p>
                 <p class="fw-bold mb-0"><?= htmlspecialchars($certidao_gerada['emissor_nome'] ?? 'Matheus Viana Lima') ?></p>
                 <p class="mb-0 small"><?= htmlspecialchars($certidao_gerada['emissor_cargo'] ?? 'Chefe de Arrecadação do Setor Tributário') ?></p>
                 <p class="text-muted small mb-0"><?= htmlspecialchars($certidao_gerada['emissor_portaria'] ?? 'Portaria 011/2025') ?></p>
+                <p class="certidao-rodape-legal mt-2 mb-0">Selo de Autenticidade Digital: <strong><?= $certidao_gerada['codigo_validacao'] ?></strong> — a autenticidade pode ser conferida junto à Prefeitura Municipal de Centro do Guilherme.</p>
+                <p class="certidao-rodape-legal mb-0">Documento emitido eletronicamente pelo Sistema de Arrecadação Municipal.</p>
             </div>
         </div>
     <?php endif; ?>
