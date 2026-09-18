@@ -10,8 +10,8 @@ if ($id_nfa <= 0) {
 
 // Busca os dados da NFA com as informações do Prestador e Tomador
 $sql = "SELECT nfa.*, 
-               p.nome_razao AS prestador_nome, p.cpf_cnpj AS prestador_documento, p.endereco AS prestador_endereco, p.bairro AS prestador_bairro, p.cidade AS prestador_cidade, p.uf AS prestador_uf,
-               t.nome_razao AS tomador_nome, t.cpf_cnpj AS tomador_documento, t.endereco AS tomador_endereco, t.bairro AS tomador_bairro, t.cidade AS tomador_cidade, t.uf AS tomador_uf
+               p.nome_razao AS prestador_nome, p.cpf_cnpj AS prestador_documento, p.endereco AS prestador_endereco, p.bairro AS prestador_bairro, p.cidade AS prestador_cidade, p.uf AS prestador_uf, p.numero AS prestador_numero,
+               t.nome_razao AS tomador_nome, t.cpf_cnpj AS tomador_documento, t.endereco AS tomador_endereco, t.bairro AS tomador_bairro, t.cidade AS tomador_cidade, t.uf AS tomador_uf, t.numero AS tomador_numero
         FROM notas_fiscais_avulsas nfa
         LEFT JOIN contribuintes p ON nfa.contribuinte_prestador_id = p.id
         LEFT JOIN contribuintes t ON nfa.contribuinte_tomador_id = t.id
@@ -133,7 +133,7 @@ $valor_iss = number_format($nfa['valor_iss'], 2, ',', '.');
         <td>
             <strong>CPF/CNPJ:</strong> <?= htmlspecialchars($nfa['prestador_documento'] ?? '-') ?><br>
             <strong>Nome/Razão Social:</strong> <?= htmlspecialchars($nfa['prestador_nome'] ?? '-') ?><br>
-            <strong>Endereço:</strong> <?= htmlspecialchars($nfa['prestador_endereco'] ?? 'Não informado') ?><br>
+            <strong>Endereço:</strong> <?= htmlspecialchars($nfa['prestador_endereco'] ?? 'Não informado') ?>, <?= htmlspecialchars($nfa['prestador_numero'] ?? '-') ?><br>
             <strong>Bairro:</strong> <?= htmlspecialchars($nfa['prestador_bairro'] ?? 'Centro') ?><br>
             <strong>Município:</strong> <?= htmlspecialchars($nfa['prestador_cidade'] ?? 'Centro do Guilherme-') ?><strong>-</strong> <strong>UF:</strong><strong></strong><?= htmlspecialchars($nfa['prestador_uf'] ?? 'Centro do Guilherme-') ?>
         </td>
@@ -147,7 +147,7 @@ $valor_iss = number_format($nfa['valor_iss'], 2, ',', '.');
         <td>
             <strong>Nome/Razão Social:</strong> <?= htmlspecialchars($nfa['tomador_nome'] ?? 'CONSUMIDOR FINAL / NÃO CADASTRADO') ?><br>
             <strong>CPF/CNPJ:</strong> <?= htmlspecialchars($nfa['tomador_documento'] ?? '----') ?><br>
-            <strong>Endereço:</strong> <?= htmlspecialchars($nfa['tomador_endereco'] ?? '----') ?><br>
+            <strong>Endereço:</strong> <?= htmlspecialchars($nfa['tomador_endereco'] ?? '----') ?>, <?= htmlspecialchars($nfa['tomador_numero'] ?? '-') ?><br>
             <strong>Bairro:</strong> <?= htmlspecialchars($nfa['tomador_bairro'] ?? '----') ?><br>
             <strong>Município:</strong> <?= htmlspecialchars($nfa['tomador_cidade'] ?? 'Centro do Guilherme-') ?><strong>-</strong> <strong>UF:</strong><strong></strong><?= htmlspecialchars($nfa['tomador_uf'] ?? 'Centro do Guilherme-') ?>
         </td>
@@ -229,7 +229,7 @@ $valor_iss = number_format($nfa['valor_iss'], 2, ',', '.');
             </td>
             <td style="text-align: center; vertical-align: middle; font-weight: bold;">
                 PREFEITURA MUNICIPAL DE CENTRO DO GUILHERME<br>
-                SECRETARIA MUNICIPAL DE FINANÇAS E TRIBUTOS<br>
+                SECRETARIA MUNICIPAL DE FAZENDA PÚBLICA<br>
                 <span style="font-size: 13px;">DOCUMENTO DE ARRECADAÇÃO MUNICIPAL - DAM</span>
             </td>
             <td style="width: 130px; text-align: center; vertical-align: middle; background: #f0f0f0;">
@@ -249,14 +249,14 @@ $valor_iss = number_format($nfa['valor_iss'], 2, ',', '.');
             <?= htmlspecialchars($nfa['prestador_nome'] ?? '-') ?>
         </td>
         <td>
-            <strong>CPF / CNPJ:</strong>
+            <strong>CPF / CNPJ:</strong><br>
             <?= htmlspecialchars($nfa['prestador_documento'] ?? '-') ?>
         </td>
     </tr>
     <tr>
         <td colspan="2">
             <strong>ENDEREÇO:</strong>
-            <?= htmlspecialchars($nfa['prestador_endereco'] ?? 'Não informado') ?>
+            <?= htmlspecialchars($nfa['prestador_endereco'] ?? 'Não informado') ?>, <?= htmlspecialchars($nfa['prestador_numero'] ?? '-') ?>
         </td>
         <td>
             <strong>BAIRRO:</strong>

@@ -277,7 +277,7 @@ if (isset($_GET['certidao_id'])) {
                         <strong>NADA CONSTA</strong>, em relação a débitos de dívida ativa municipal, de natureza tributária, referente a <?= htmlspecialchars($certidao_gerada['tributos_referencia']) ?>, com o município de Centro do Guilherme-MA.
                     </p>
                     <p class="mb-2 fst-italic certidao-rodape-legal" style="font-size: 0.8rem; border-top: 1px solid #ddd; padding-top: 8px;">
-                        <strong>Fundamentação Legal:</strong> Esta certidão é expedida nos estritos termos do Artigo 225º e parágrafo único da Lei do Código Tributário Municipal de Centro do Guilherme - MA, fazendo prova de quitação de tributos municipais requerida pelo interessado. A presente certidão goza de eficácia liberatória pelo prazo de 90 (noventa) dias a contar da data de sua expedição, ressalvado o direito da Fazenda Municipal de cobrar quaisquer dívidas que venham a ser apuradas posteriormente (Art. 227º do CTM).
+                        <strong>Fundamentação Legal:</strong> Esta certidão é expedida nos estritos termos do Artigo 225° e parágrafo único da Lei do Código Tributário Municipal de Centro do Guilherme - MA, fazendo prova de quitação de tributos municipais requerida pelo interessado. A presente certidão goza de eficácia liberatória pelo prazo de 90 (noventa) dias a contar da data de sua expedição, ressalvado o direito da Fazenda Municipal de cobrar quaisquer dívidas que venham a ser apuradas posteriormente (Art. 227° do CTM).
                     </p>
                 </div>
             <?php endif; ?>
@@ -294,7 +294,7 @@ echo $meses[date('m')];
                 <p class="fw-bold mb-0"><?= htmlspecialchars($certidao_gerada['emissor_nome'] ?? 'Matheus Viana Lima') ?></p>
                 <p class="mb-0 small"><?= htmlspecialchars($certidao_gerada['emissor_cargo'] ?? 'Chefe de Arrecadação do Setor Tributário') ?></p>
                 <p class="text-muted small mb-0"><?= htmlspecialchars($certidao_gerada['emissor_portaria'] ?? 'Portaria 011/2025') ?></p>
-                <p class="certidao-rodape-legal mt-2 mb-0">Selo de Autenticidade Digital: <strong><?= $certidao_gerada['codigo_validacao'] ?></strong> — a autenticidade pode ser conferida junto à Prefeitura Municipal de Centro do Guilherme.</p>
+                <p class="certidao-rodape-legal mt-2 mb-0">Selo de Autenticidade Digital: <strong><?= $certidao_gerada['codigo_validacao'] ?></strong> — A autenticidade pode ser conferida junto à Prefeitura Municipal de Centro do Guilherme.</p>
                 <p class="certidao-rodape-legal mb-0">Documento emitido eletronicamente pelo Sistema de Arrecadação Municipal.</p>
             </div>
         </div>
