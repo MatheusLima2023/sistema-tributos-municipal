@@ -1,8 +1,6 @@
-
 <?php
-ini_set('display_errors', 0);
-ini_set('display_startup_errors', 0);
-ini_set('log_errors', 1);
+ini_set('display_errors', 1);
+ini_set('display_startup_errors', 1);
 error_reporting(E_ALL);
 require_once 'auth.php';
 require_once 'db.php';
@@ -44,7 +42,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         ':numero'              => trim($_POST['numero']),
         ':bairro'              => trim($_POST['bairro']),
         ':cidade'              => trim($_POST['cidade']),
-        ':uf'                  => trim($_POST['uf'])
+        ':uf'                  => strtoupper(trim($_POST['uf']))
     ];
 
     if ($id) {
@@ -163,8 +161,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     <div class="col-md-4">
                         <label class="form-label fw-bold">Cidade / UF</label>
                         <div class="input-group">
-                            <input type="text" name="cidade" class="form-control" value="<?= htmlspecialchars($contribuinte['cidade']) ?>" readonly>
-                            <input type="text" name="uf" class="form-control" style="max-width: 70px;" value="<?= htmlspecialchars($contribuinte['uf']) ?>" readonly>
+                            <input type="text" name="cidade" class="form-control" value="<?= htmlspecialchars($contribuinte['cidade']) ?>">
+                            <input type="text" name="uf" class="form-control text-uppercase" style="max-width: 70px;" maxlength="2" value="<?= htmlspecialchars($contribuinte['uf']) ?>">
                         </div>
                     </div>
                 </div>
