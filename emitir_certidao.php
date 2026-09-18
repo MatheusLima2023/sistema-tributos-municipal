@@ -165,7 +165,7 @@ if (isset($_GET['certidao_id'])) {
                             <label class="form-label">Tipo de Documento</label>
                             <select name="tipo_certidao" class="form-select" required>
                                 <option value="NEGATIVA">Certidão Negativa de Débitos</option>
-                                <option value="POSITIVA_COM_EFEITO_DE_NEGATIVA">Certidão Positiva com Efeito de Negativa</option>
+                                <option value="POSITIVA_COM_EFEITO_DE_NEGATIVA">Certidão Negativa de Débitos da Dívida Ativa Municipal</option>
                                 <option value="COMPROVANTE_INSCRICAO_MUNICIPAL">Comprovante de Inscrição Municipal</option>
                             </select>
                         </div>
