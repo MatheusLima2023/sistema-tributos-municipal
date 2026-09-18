@@ -207,7 +207,7 @@ if (isset($_GET['certidao_id'])) {
             <div class="text-center fw-bold text-uppercase certidao-titulo-box">
                 <?php 
                     if ($certidao_gerada['tipo_certidao'] === 'NEGATIVA') echo "CERTIDÃO NEGATIVA DE DÉBITOS";
-                    elseif ($certidao_gerada['tipo_certidao'] === 'POSITIVA_COM_EFEITO_DE_NEGATIVA') echo "CERTIDÃO POSITIVA COM EFEITO NEGATIVO DE DÉBITOS RELATIVOS AOS TRIBUTOS MUNICIPAIS E À DÍVIDA ATIVA DO MUNICÍPIO";
+                    elseif ($certidao_gerada['tipo_certidao'] === 'POSITIVA_COM_EFEITO_DE_NEGATIVA') echo "Certidão Negativa de Débitos da Dívida Ativa Municipal";
                     else echo "COMPROVANTE DE INSCRIÇÃO MUNICIPAL";
                 ?>
             </div>
